@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Learning Dashboard</title>
+</head>
+<body>
+  <!-- Topics Page with Welcome Message -->
+  <div class="container topic-list" id="topic-list">
+    <div class="welcome-section">Welcome to Your Learning Dashboard</div>
+    <h2>Select a Topic to Begin Quiz</h2>
+    <ul id="topics">
+      <!-- Topics will be dynamically added here -->
+    </ul>
+  </div>
+
+  <!-- Quiz Page -->
+  <div class="container quiz-section hidden" id="quiz-section">
+    <h3 id="quiz-topic"></h3>
+    <p id="question"></p>
+    <div id="options">
+      <!-- Options will be added here dynamically -->
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <button id="next-btn" class="hidden" onclick="nextQuestion()">Next Question</button>
+    <button onclick="returnToTopics()">Return to Topics</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

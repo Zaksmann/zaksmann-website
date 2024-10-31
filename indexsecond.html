@@ -1,0 +1,348 @@
+<html><head><base href="." /><title>Learning Dashboard</title><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><style>
+    /* CSS for Dashboard */
+    :root {
+        --primary: #2563eb;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --background: #f3f4f6;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    body {
+        background: var(--background);
+    }
+    
+    .dashboard {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        min-height: 100vh;
+    }
+    
+    .sidebar {
+        background: white;
+        padding: 1.5rem;
+        border-right: 1px solid #e5e7eb;
+    }
+    
+    .main-content {
+        padding: 2rem;
+    }
+    
+    .learning-path {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .quiz-section {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .topic-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .topic-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .feedback {
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 6px;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .feedback.correct {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+        border: 1px solid var(--success);
+        display: block;
+    }
+    
+    .feedback.incorrect {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        display: block;
+    }
+    
+    .progress-indicator {
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        margin: 1rem 0;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        background: var(--primary);
+        color: white;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+    }
+    
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .student-info {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(37, 99, 235, 0.1);
+        border-radius: 6px;
+    }
+    </style></head><body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>Learning Dashboard</h2>
+            <div class="student-info">
+                <p>Student Name: John Doe</p>
+                <p>Class: JSS 3</p>
+                <p>Current Level: Beginner</p>
+                <div class="progress-indicator">
+                    <div class="progress-bar" style="width: 30%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="learning-path">
+                <h3>Your Learning Path</h3>
+                <div id="recommended-topics"></div>
+            </div>
+    
+            <div class="quiz-section">
+                <h3>Current Quiz</h3>
+                <div id="quiz-container">
+                    <div id="question"></div>
+                    <div id="options" class="options-grid"></div>
+                    <div id="feedback" class="feedback"></div>
+                    <button id="next-question" class="btn" style="display: none;">Next Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    const topics = [
+        {
+            id: 1,
+            title: "Basic Mathematics",
+            difficulty: "beginner",
+            prerequisites: [],
+            description: "Foundation concepts in mathematics"
+        },
+        {
+            id: 2,
+            title: "Introduction to Algebra",
+            difficulty: "intermediate",
+            prerequisites: [1],
+            description: "Basic algebraic expressions and equations"
+        },
+        {
+            id: 3,
+            title: "Geometry Basics",
+            difficulty: "intermediate",
+            prerequisites: [1],
+            description: "Fundamental geometric concepts"
+        }
+    ];
+    
+    const quizzes = {
+        1: [
+            {
+                question: "What is 7 + 8?",
+                options: ["13", "14", "15", "16"],
+                correctAnswer: "15",
+                explanation: "7 + 8 = 15 (You can verify this by counting or using basic addition)"
+            },
+            {
+                question: "What is 12 - 5?",
+                options: ["5", "6", "7", "8"],
+                correctAnswer: "7",
+                explanation: "12 - 5 = 7 (You can verify this by counting backwards from 12)"
+            },
+            {
+                question: "What is 4 × 6?",
+                options: ["18", "20", "24", "28"],
+                correctAnswer: "24",
+                explanation: "4 × 6 = 24 (You can think of this as 6 + 6 + 6 + 6)"
+            }
+        ]
+    };
+    
+    let currentQuizId = null;
+    let currentQuestionIndex = 0;
+    let studentProgress = {
+        correctAnswers: 0,
+        totalQuestions: 0,
+        completedTopics: []
+    };
+    
+    function loadRecommendedTopics() {
+        const container = document.getElementById('recommended-topics');
+        const studentLevel = "beginner";
+        
+        const recommendedTopics = topics.filter(topic => {
+            if (studentLevel === "beginner") {
+                return topic.difficulty === "beginner";
+            }
+            return true;
+        });
+    
+        container.innerHTML = '';
+        recommendedTopics.forEach(topic => {
+            const topicElement = document.createElement('div');
+            topicElement.className = 'topic-card';
+            topicElement.innerHTML = `
+                <h4>${topic.title}</h4>
+                <p>Difficulty: ${topic.difficulty}</p>
+                <p>${topic.description}</p>
+                <button class="btn" onclick="startQuiz(${topic.id})">Start Quiz</button>
+            `;
+            container.appendChild(topicElement);
+        });
+    }
+    
+    function startQuiz(topicId) {
+        currentQuizId = topicId;
+        currentQuestionIndex = 0;
+        studentProgress.correctAnswers = 0;
+        const quiz = quizzes[topicId];
+        studentProgress.totalQuestions = quiz.length;
+        showQuestion();
+    }
+    
+    function showQuestion() {
+        const quiz = quizzes[currentQuizId];
+        if (!quiz || currentQuestionIndex >= quiz.length) {
+            showQuizSummary();
+            return;
+        }
+    
+        const questionContainer = document.getElementById('question');
+        const optionsContainer = document.getElementById('options');
+        const feedbackContainer = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-question');
+        
+        const currentQuestion = quiz[currentQuestionIndex];
+    
+        questionContainer.innerHTML = `
+            <h4>Question ${currentQuestionIndex + 1} of ${quiz.length}</h4>
+            <p style="margin-top: 1rem">${currentQuestion.question}</p>
+        `;
+        
+        optionsContainer.innerHTML = '';
+        feedbackContainer.className = 'feedback';
+        feedbackContainer.innerHTML = '';
+        nextButton.style.display = 'none';
+    
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'btn';
+            button.textContent = option;
+            button.onclick = () => checkAnswer(option, currentQuestion.correctAnswer, currentQuestion.explanation);
+            optionsContainer.appendChild(button);
+        });
+    }
+    
+    function checkAnswer(selected, correct, explanation) {
+        const feedbackElement = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-question');
+        const optionsContainer = document.getElementById('options');
+        
+        // Disable all option buttons
+        Array.from(optionsContainer.children).forEach(button => {
+            button.disabled = true;
+        });
+    
+        if (selected === correct) {
+            feedbackElement.className = 'feedback correct';
+            feedbackElement.innerHTML = `
+                <h4>Correct! Well done!</h4>
+                <p>${explanation}</p>
+            `;
+            studentProgress.correctAnswers++;
+        } else {
+            feedbackElement.className = 'feedback incorrect';
+            feedbackElement.innerHTML = `
+                <h4>Incorrect</h4>
+                <p>The correct answer is ${correct}</p>
+                <p>${explanation}</p>
+            `;
+        }
+    
+        nextButton.style.display = 'block';
+        nextButton.onclick = () => {
+            currentQuestionIndex++;
+            showQuestion();
+        };
+    }
+    
+    function showQuizSummary() {
+        const quizContainer = document.getElementById('quiz-container');
+        const score = (studentProgress.correctAnswers / studentProgress.totalQuestions) * 100;
+        
+        quizContainer.innerHTML = `
+            <h4>Quiz Complete!</h4>
+            <div class="feedback ${score >= 70 ? 'correct' : 'incorrect'}">
+                <p>You scored ${score}% (${studentProgress.correctAnswers} out of ${studentProgress.totalQuestions})</p>
+                <p>${score >= 70 ? 'Great job! You can move on to the next topic.' : 'You might want to review this topic again.'}</p>
+            </div>
+            <button class="btn" onclick="loadRecommendedTopics()">Return to Topics</button>
+        `;
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRecommendedTopics();
+    });
+    </script>
+    </body></html>
